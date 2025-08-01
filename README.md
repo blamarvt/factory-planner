@@ -13,7 +13,6 @@ The Factorio Factory Planner takes your current research progress and production
 - **Efficient Layout Generation**: Creates optimized factory designs with minimal belt congestion and resource waste
 - **Visual Output**: Generates clear, implementable factory blueprints and images
 - **Production Goal Optimization**: Calculates optimal production ratios for target items per minute/second
-- **Resource Flow Analysis**: Traces material flow from raw resources to final products
 
 ### Advanced Features (Planned)
 - **Modular Factory Design**: Creates reusable factory modules that can be expanded
