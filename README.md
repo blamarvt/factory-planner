@@ -4,84 +4,47 @@ A sophisticated tool for automatically generating efficient Factorio factory lay
 
 ## Overview
 
-The Factorio Factory Planner takes your current research progress and production requirements as input, then generates optimized factory designs that maximize efficiency while minimizing resource waste and space usage. The tool outputs visual factory layouts that can be directly implemented in-game.
+The Factorio Factory Planner is a command-line tool that takes your current research progress and production requirements as input, then generates optimized factory designs. The tool outputs both visual PNG images and Factorio blueprint strings that can be directly imported into the game.
 
 ## Goals and Features
 
 ### Core Features
 - **Research-Aware Planning**: Analyzes your unlocked technologies to determine available recipes and production methods
 - **Efficient Layout Generation**: Creates optimized factory designs with minimal belt congestion and resource waste
-- **Visual Output**: Generates clear, implementable factory blueprints and images
+- **PNG Output**: Generates clear, visual factory layouts for easy implementation
+- **Blueprint Export**: Outputs Factorio blueprint strings for direct import into the game
 - **Production Goal Optimization**: Calculates optimal production ratios for target items per minute/second
 
-### Advanced Features (Planned)
-- **Modular Factory Design**: Creates reusable factory modules that can be expanded
-- **Multi-Product Optimization**: Handles complex production chains with multiple end products
-- **Space Efficiency Analysis**: Optimizes for compact designs when space is limited
-- **Power and Infrastructure Planning**: Includes power pole and logistics infrastructure in designs
-- **Blueprint Export**: Direct integration with Factorio's blueprint system
+## Technology Stack
 
-## Technology Stack Options
+This is a command-line program written in **Go** that generates:
+- **PNG images**: Visual factory layouts for easy implementation
+- **Factorio blueprint strings**: Direct import into the game's blueprint system
 
-### Backend Options
-1. **Python-based Solution**
-   - **Pros**: Rich data science ecosystem, excellent for optimization algorithms, mature libraries
-   - **Libraries**: NetworkX (graph algorithms), SciPy (optimization), PIL/Pillow (image generation)
-   - **Frameworks**: Flask/FastAPI for web interface, Click for CLI
-
-2. **JavaScript/Node.js Solution**
-   - **Pros**: Single language for full-stack, excellent web integration, active community
-   - **Libraries**: D3.js (visualization), Canvas API (image generation), Express.js (web server)
-   - **Frameworks**: React/Vue.js for frontend, Electron for desktop app
-
-3. **Rust Solution**
-   - **Pros**: High performance, memory safety, excellent for complex algorithms
-   - **Libraries**: Petgraph (graph algorithms), Image crate (image processing), Serde (data serialization)
-   - **Frameworks**: Actix-web for API, Tauri for desktop interface
-
-### Frontend Options
-1. **Web Application**
-   - **React/TypeScript**: Component-based UI with strong typing
-   - **Vue.js**: Progressive framework with excellent developer experience
-   - **Svelte**: Compile-time optimizations for fast rendering
-
-2. **Desktop Application**
-   - **Electron**: Cross-platform with web technologies
-   - **Tauri**: Lightweight Rust-based alternative to Electron
-   - **Native**: Platform-specific apps (Qt, GTK, WinUI)
-
-3. **Command-Line Interface**
-   - **JSON/YAML input**: Configuration files for batch processing
-   - **Interactive CLI**: Step-by-step factory planning wizard
-
-### Data Storage Options
-1. **File-based**: JSON/YAML for recipes, technologies, and user configurations
-2. **SQLite**: Lightweight database for complex queries and relationships
-3. **Graph Database**: Neo4j or similar for recipe dependency graphs
-
-## Project Structure (Planned)
+## Project Structure
 
 ```
 factory-planner/
-├── src/
-│   ├── core/              # Core planning algorithms
-│   │   ├── recipe_parser.py
-│   │   ├── optimization.py
-│   │   └── layout_generator.py
-│   ├── data/              # Factorio game data
-│   │   ├── recipes.json
-│   │   ├── technologies.json
-│   │   └── items.json
-│   ├── visualization/     # Image and blueprint generation
-│   │   ├── factory_renderer.py
-│   │   └── blueprint_exporter.py
-│   └── api/               # Web API or CLI interface
-│       ├── routes.py
-│       └── models.py
-├── tests/                 # Unit and integration tests
-├── docs/                  # Documentation and examples
-├── examples/              # Sample configurations and outputs
-└── data/                  # Game data and user configurations
+├── cmd/                     # CLI application entry point
+│   └── main.go
+├── internal/                # Private application code
+│   ├── core/                # Core planning algorithms
+│   │   ├── recipe.go
+│   │   ├── optimization.go
+│   │   └── layout.go
+│   ├── data/                # Game data structures
+│   │   ├── recipes.go
+│   │   ├── technologies.go
+│   │   └── items.go
+│   ├── render/              # PNG generation
+│   │   └── factory_image.go
+│   └── blueprint/           # Blueprint string generation
+│       └── exporter.go
+├── pkg/                     # Public API packages
+├── testdata/                # Test fixtures and sample data
+├── examples/                # Sample configurations and outputs
+├── go.mod                   # Go module definition
+└── go.sum                   # Go module checksums
 ```
 
 ## Algorithm Approach
@@ -101,9 +64,9 @@ factory-planner/
 - Consider belt throughput, inserter speeds, and assembler positioning
 - Generate collision-free factory designs
 
-### 4. Visualization
-- Render factory layouts as clear, labeled images
-- Export as Factorio-compatible blueprints
+### 4. Output Generation
+- Render factory layouts as PNG images with clear labels
+- Generate Factorio-compatible blueprint strings
 - Provide material lists and construction guides
 
 ## Getting Started (Coming Soon)
@@ -111,14 +74,14 @@ factory-planner/
 The tool is currently in early development. Once ready, it will support:
 
 ```bash
-# Install the factory planner
-pip install factorio-factory-planner
+# Build the factory planner
+go build -o factory-planner cmd/main.go
 
 # Generate a factory for basic science production
-factory-planner --research basic-science --target "science-pack-1:60/min"
+./factory-planner --research basic-science --target "science-pack-1:60/min" --output factory.png
 
-# Web interface
-factory-planner serve --port 8080
+# Generate both PNG and blueprint string
+./factory-planner --research basic-science --target "science-pack-1:60/min" --output factory.png --blueprint
 ```
 
 ## Contributing
@@ -127,13 +90,14 @@ This project is in the initial planning phase. Contributions and feedback are we
 
 ### Development Setup (Future)
 1. Clone the repository
-2. Install dependencies
-3. Run tests
-4. Start the development server
+2. Install Go 1.21 or later
+3. Run `go mod tidy` to install dependencies
+4. Run `go test ./...` to run tests
+5. Build with `go build -o factory-planner cmd/main.go`
 
 ### Areas for Contribution
 - Algorithm optimization and efficiency improvements
-- UI/UX design for the planning interface
+- Command-line interface design and usability
 - Factorio game data parsing and updates
 - Performance benchmarking and testing
 - Documentation and examples
