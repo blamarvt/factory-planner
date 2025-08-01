@@ -1,6 +1,8 @@
 // Package data contains item definitions and properties.
 package data
 
+import "image/color"
+
 // ItemType represents the category of an item.
 type ItemType string
 
@@ -61,12 +63,15 @@ func LoadItems() (*ItemDatabase, error) {
 		{Name: "utility-science-pack", Type: ItemTypeConsumable, StackSize: 200},
 
 		// Buildings
-		{Name: "assembling-machine-1", Type: ItemTypeBuilding, StackSize: 50},
-		{Name: "assembling-machine-2", Type: ItemTypeBuilding, StackSize: 50},
-		{Name: "assembling-machine-3", Type: ItemTypeBuilding, StackSize: 50},
-		{Name: "stone-furnace", Type: ItemTypeBuilding, StackSize: 50},
-		{Name: "steel-furnace", Type: ItemTypeBuilding, StackSize: 50},
-		{Name: "electric-furnace", Type: ItemTypeBuilding, StackSize: 50},
+		{Name: "assembling-machine-1", Type: ItemTypeBuilding, StackSize: 50, Properties: map[string]interface{}{"color": color.RGBA{100, 150, 255, 255}}},
+		{Name: "assembling-machine-2", Type: ItemTypeBuilding, StackSize: 50, Properties: map[string]interface{}{"color": color.RGBA{100, 150, 255, 255}}},
+		{Name: "assembling-machine-3", Type: ItemTypeBuilding, StackSize: 50, Properties: map[string]interface{}{"color": color.RGBA{100, 150, 255, 255}}},
+		{Name: "stone-furnace", Type: ItemTypeBuilding, StackSize: 50, Properties: map[string]interface{}{"color": color.RGBA{255, 100, 100, 255}}},
+		{Name: "steel-furnace", Type: ItemTypeBuilding, StackSize: 50, Properties: map[string]interface{}{"color": color.RGBA{255, 100, 100, 255}}},
+		{Name: "electric-furnace", Type: ItemTypeBuilding, StackSize: 50, Properties: map[string]interface{}{"color": color.RGBA{255, 100, 100, 255}}},
+		{Name: "transport-belt", Type: ItemTypeBuilding, StackSize: 100, Properties: map[string]interface{}{"color": color.RGBA{255, 255, 100, 255}}},
+		{Name: "inserter", Type: ItemTypeBuilding, StackSize: 50, Properties: map[string]interface{}{"color": color.RGBA{100, 255, 100, 255}}},
+		{Name: "small-electric-pole", Type: ItemTypeBuilding, StackSize: 50, Properties: map[string]interface{}{"color": color.RGBA{255, 150, 100, 255}}},
 	}
 
 	for _, item := range items {
@@ -107,4 +112,18 @@ func (db *ItemDatabase) IsFuel(itemName string) bool {
 		return item.FuelValue > 0
 	}
 	return false
+}
+
+// GetItemColor retrieves the color property of an item.
+func (db *ItemDatabase) GetItemColor(itemName string) (color.Color, bool) {
+	if item, exists := db.GetItem(itemName); exists {
+		if item.Properties != nil {
+			if colorValue, hasColor := item.Properties["color"]; hasColor {
+				if c, ok := colorValue.(color.Color); ok {
+					return c, true
+				}
+			}
+		}
+	}
+	return nil, false
 }

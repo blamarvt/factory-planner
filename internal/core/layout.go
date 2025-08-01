@@ -1,7 +1,15 @@
 // Package core contains layout generation algorithms for factory design.
 package core
 
-import "fmt"
+import (
+	"fmt"
+	"image/color"
+)
+
+// ItemColorProvider provides color information for items.
+type ItemColorProvider interface {
+	GetItemColor(itemName string) (color.Color, bool)
+}
 
 // Position represents a 2D coordinate in the factory layout.
 type Position struct {
@@ -13,8 +21,9 @@ type Building struct {
 	ID       string
 	Type     string // "assembler", "furnace", "belt", "inserter", etc.
 	Position Position
-	Recipe   string // recipe being crafted (for machines)
-	Rotation int    // 0, 90, 180, 270 degrees
+	Recipe   string     // recipe being crafted (for machines)
+	Rotation int        // 0, 90, 180, 270 degrees
+	Color    color.Color // color for rendering
 }
 
 // FactoryLayout represents the complete physical layout of a factory.
@@ -27,13 +36,22 @@ type FactoryLayout struct {
 
 // LayoutGenerator creates physical factory layouts from production plans.
 type LayoutGenerator struct {
-	MinSpacing int // minimum space between buildings
+	MinSpacing    int                // minimum space between buildings
+	ColorProvider ItemColorProvider  // provider for building colors
 }
 
 // NewLayoutGenerator creates a new layout generator.
 func NewLayoutGenerator() *LayoutGenerator {
 	return &LayoutGenerator{
 		MinSpacing: 2, // default spacing
+	}
+}
+
+// NewLayoutGeneratorWithColorProvider creates a new layout generator with a color provider.
+func NewLayoutGeneratorWithColorProvider(colorProvider ItemColorProvider) *LayoutGenerator {
+	return &LayoutGenerator{
+		MinSpacing:    2,
+		ColorProvider: colorProvider,
 	}
 }
 
@@ -64,13 +82,30 @@ func (lg *LayoutGenerator) GenerateLayout(plan *ProductionPlan) (*FactoryLayout,
 
 	for recipeName, count := range plan.RequiredMachines {
 		for i := 0; i < count; i++ {
+			buildingType := "assembler" // simplified for now
 			building := Building{
 				ID:       fmt.Sprintf("building_%d", buildingID),
-				Type:     "assembler", // simplified for now
+				Type:     buildingType,
 				Position: Position{X: x, Y: y},
 				Recipe:   recipeName,
 				Rotation: 0,
 			}
+
+			// Set building color from color provider
+			if lg.ColorProvider != nil {
+				// Map building type to item name
+				itemName := lg.getBuildingItemName(buildingType)
+				if buildingColor, hasColor := lg.ColorProvider.GetItemColor(itemName); hasColor {
+					building.Color = buildingColor
+				} else {
+					// Default color if not found
+					building.Color = color.RGBA{150, 150, 150, 255} // gray
+				}
+			} else {
+				// Default color if no provider
+				building.Color = color.RGBA{150, 150, 150, 255} // gray
+			}
+
 			layout.Buildings = append(layout.Buildings, building)
 
 			buildingID++
@@ -110,4 +145,22 @@ func (lg *LayoutGenerator) ValidateLayout(layout *FactoryLayout) error {
 	}
 
 	return nil
+}
+
+// getBuildingItemName maps building types to their corresponding item names.
+func (lg *LayoutGenerator) getBuildingItemName(buildingType string) string {
+	switch buildingType {
+	case "assembler":
+		return "assembling-machine-1"
+	case "furnace":
+		return "stone-furnace"
+	case "belt":
+		return "transport-belt"
+	case "inserter":
+		return "inserter"
+	case "power":
+		return "small-electric-pole"
+	default:
+		return "assembling-machine-1" // default fallback
+	}
 }

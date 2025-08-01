@@ -14,10 +14,9 @@ import (
 
 // ImageRenderer handles the generation of factory layout images.
 type ImageRenderer struct {
-	TileSize       int                    // pixels per tile
-	GridColor      color.Color            // grid line color
-	BgColor        color.Color            // background color
-	BuildingColors map[string]color.Color // building type -> color
+	TileSize  int         // pixels per tile
+	GridColor color.Color // grid line color
+	BgColor   color.Color // background color
 }
 
 // NewImageRenderer creates a new image renderer with default settings.
@@ -26,13 +25,6 @@ func NewImageRenderer() *ImageRenderer {
 		TileSize:  32,                             // 32x32 pixels per tile
 		GridColor: color.RGBA{200, 200, 200, 255}, // light gray
 		BgColor:   color.RGBA{50, 50, 50, 255},    // dark gray
-		BuildingColors: map[string]color.Color{
-			"assembler": color.RGBA{100, 150, 255, 255}, // blue
-			"furnace":   color.RGBA{255, 100, 100, 255}, // red
-			"belt":      color.RGBA{255, 255, 100, 255}, // yellow
-			"inserter":  color.RGBA{100, 255, 100, 255}, // green
-			"power":     color.RGBA{255, 150, 100, 255}, // orange
-		},
 	}
 }
 
@@ -108,9 +100,9 @@ func (ir *ImageRenderer) drawGrid(img *image.RGBA, gridWidth, gridHeight int) {
 
 // drawBuilding draws a single building on the image.
 func (ir *ImageRenderer) drawBuilding(img *image.RGBA, building *core.Building) {
-	// Get building color
-	buildingColor, exists := ir.BuildingColors[building.Type]
-	if !exists {
+	// Get building color from the building itself
+	buildingColor := building.Color
+	if buildingColor == nil {
 		buildingColor = color.RGBA{150, 150, 150, 255} // default gray
 	}
 
@@ -138,9 +130,4 @@ func (ir *ImageRenderer) drawBuilding(img *image.RGBA, building *core.Building) 
 		img.Set(x1, y, borderColor)
 		img.Set(x2-1, y, borderColor)
 	}
-}
-
-// SetBuildingColor allows customization of building colors.
-func (ir *ImageRenderer) SetBuildingColor(buildingType string, color color.Color) {
-	ir.BuildingColors[buildingType] = color
 }

@@ -60,7 +60,7 @@ type Exporter struct {
 // NewExporter creates a new blueprint exporter.
 func NewExporter() *Exporter {
 	return &Exporter{
-		Version: 281479275249664, // Factorio 1.1.x version
+		Version: 281474976710656, // Factorio 1.0.0 version
 	}
 }
 
